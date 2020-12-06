@@ -1,159 +1,228 @@
 #include <iostream>
 #include <ctime>
-#include <string.h>
 #include <fstream>
 #include <stdlib.h>
+#include <string.h>
 #include <string>
 #include "nodos.h"
-
-using namespace std;
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
-//DECLARACION DE FUNCIONES Y VARIABLES ---------------------------------------------
-void agregar(nodos*);
-void presentar(nodos *);
-void presentar_or(nodos *);
-void abrir();
+using namespace std;
+
 nodos *R, *T;
-
-unsigned  t1, t2;
-int n, continuar, op, x;
-
-//USANDO ORDENAMIENTO DE ARBOL-----------------------------------------------------
+void abrir();
+void agregar(nodos *);
+void presentar(nodos *);
+int buscar(nodos *, int);
+void ascendente(nodos *);
+void descendente(nodos *);
+unsigned t1,t2;
+char linea[6];
+char nombre[6];
+int x, n, b, op;
 int main(int argc, char** argv) {
-	string linea;
-	string nombre1;
-
-	//MENU PARA INGRESAR LOS ARCHIVOS----------------------------------------------
-	//do{
-	
-	//LEER EL ARCHIVO QUE SE UTILIZARA-------------------------------------
-		abrir();
 		
-		t1 = clock();
+	do{
 		cout<<"Menu"<<endl;
-//		cout<<"1) Presentar"<<endl;
-		cout<<"1) Ordenar Ascendente"<<endl;
-		cout<<"2) Ordenar Descendente"<<endl;
+		cout<<"1) Abrir"<<endl;
+		cout<<"2) Ordenar Ascendente"<<endl;
+		cout<<"3) Ordenar Descendente"<<endl;
+		cout<<"4) Presentar"<<endl;
+		cout<<"5) Buscar"<<endl;
 		cout<<"0) Salir"<<endl;
 		cin>>op;
+		cout<<endl;
+
 		switch(op){
 			case 1:
+				abrir();
+				break;
+			case 2:{
+				t1 = clock();
+				ascendente(R);			
+				t2 = clock();
+				double time = (double(t2-t1)/CLOCKS_PER_SEC);
+				cout<<time<<endl;
+				break;}
+			case 3:{
+				t1 = clock();
+				descendente(R);		
+				t2 = clock();
+				double time = (double(t2-t1)/CLOCKS_PER_SEC);
+				cout<<time<<endl;
+				break;
+			}
+				
+			case 4:{
+					
 				presentar(R);
 				break;
-			case 2:
-				presentar_or(R);
+			}
+			case 5:{
+				cout<<"Ingrese el ID -> ";
+				cin>>b;
+				t1 = clock();
+				buscar(R,b);
+				/*if(buscar(R,b)==true){
+					cout<<"Valor encontrado" <<endl;
+				}
+				else{
+					cout<<"Dato no encontrado"<<endl;
+				}*/
+				t2 = clock();
+				double time = (double(t2-t1)/CLOCKS_PER_SEC);
+				cout<<time<<endl;
 				break;
+			}		
 			case 0:
 				break;
 			default:
 				cout<<"Opcion no valida"<<endl;
 		}
-		
-		t2 = clock();
-		double time = (double(t2-t1)/CLOCKS_PER_SEC);
+	}while(op!=0);
 	
-	/*	cout<<"Digite 1 para continuar, cualquier otro numero para salir: "<<endl;
-		cin>>continuar;
-	} while ( continuar == 1 );*/
 	return 0;
 }
-//ABRIR ARCHIVOS-------------------------------------------------------------------------------
+
 void abrir(){
-	char linea[4];
-	char nombre[4];
-	string path;
-		cout<<"Elija que conjunto de datos con el que desea trabajar"<<endl;
-		cout<<"1) Archivo de 24 Mil "<<endl;
-		cout<<"2) Archivo de 240 Mil "<<endl;
-		cout<<"3) Archivo de 24 Millones "<<endl;
-		cout<<"4) Archivo de 1 mil "<<endl;
-		cout<<"5) Salir "<<endl;
-		cin>>n;
-	
-		switch(n){
-			case 1:{
-				path = "C:\\textos\\ejemplo_24milR.txt";
-				break;
-			}
-			case 2:	{
-				path = "C:\\textos\\ejemplo240MIL.txt";
-				break;
-			}
-			case 3:{
-				path = "C:\\textos\\ejemplo.txt";
-				break;		
-			}
-			case 4: {
-				path = "C:\\textos\\ejemplo_mil.txt";
-				break;
-			}
-			case 0: 
-				break;
-			default:
-				cout<<"Opcion no valida"<<endl;
-		}	
-	ifstream fi(path);
+	string url;
+	cout<<"Elija que conjunto de datos desea ordenar"<<endl;
+	cout<<"1) Archivo de 24 Mil "<<endl;
+	cout<<"2) Archivo de 240 Mil "<<endl;
+	cout<<"3) Archivo de 24 Millones "<<endl;
+	cout<<"4) Archivo de 1 mil "<<endl;
+	cout<<"5) Salir "<<endl;
+	cin>>n;
+	cout<<endl;
+	switch(n){
+		case 1:{
+			url = ("C:\\textos\\ejemplo_24milR.txt");
+			break;
+		}
+		case 2:{
+			url = ("C:\\textos\\ejemplo240MIL.txt");
+			break;
+		}
+		case 3:{
+			url = ("C:\\textos\\ejemplo.txt");
+			break;
+		}
+		case 4: {
+			url = ("C:\\textos\\ejemplo_mil.txt");
+			break;}
+		default:
+			cout<<"Opcion no valida, se usara archivo corto"<<endl;
+			url = ("C:\\textos\\ejemplos_de_ejemplos.txt");
+	}	
+	ifstream fi(url.c_str());
 	while(!fi.eof()){
 		fi>>linea;
 		fi>>nombre;
+		
 		if(!fi.eof()){
 			x=atoi(linea);
-			agregar(x,nombre);
+			agregar(R);
 		}
 	}
 }
 
-
-
-//AGREGAR NODOS --------------------------------------------------------------------------------
 void agregar(nodos *p){
 	if(R==NULL){
+		T=new nodos();
+		T->id=x;
+		T->nombre=nombre;
+		T->De=NULL;
+		T->Iz=NULL;
 		R=T;
 	}
 	else if(T->id>p->id){
 		if(p->De==NULL){
+			T=new nodos();
+			T->id=x;
+			T->nombre=nombre;
+			T->De=NULL;
+			T->Iz=NULL;
 			p->De=T;
 		}
 		else{
+			
 			agregar(p->De);
 		}
 						
 	}
 	else{		
 		if(p->Iz==NULL){
+			T=new nodos();
+			T->id=x;
+			T->nombre=nombre;
+			T->De=NULL;
+			T->Iz=NULL;
 			p->Iz=T;
 		}
 		else{
 			agregar(p->Iz);
 		}
 		
-	}
+
 }
-//PRESENTAR DE MODO DESCENDENTE ------------------------------------------------------------
+}
+int buscar(nodos *p, int x){
+	if(p==NULL){
+		cout<<"Valor no encontrado" <<endl;
+		//return false;
+	}
+	else if(p->id==x){
+		cout<<"Valor encontrado" <<endl;
+		cout<<p->nombre<<endl;
+	}
+	else if(n < p->id){
+		buscar(p->Iz,x);
+		//	return true;					
+	}
+
+	else{
+		buscar(p->De,x);
+	}
+	}
+
+
 void presentar(nodos *p){
 	if(p==NULL){
 		return;
 	}
 	else{
 		cout<<"ID: "<<p->id<<endl;
-		cout<<"--> "<<p->nombre<<endl;
-		presentar(p->De);
+		cout<<"-> "<<p->nombre<<endl;
 		presentar(p->Iz);
+		presentar(p->De);
 	}
-	
 }
-//PRESENTAR DE MODO ASCENDENTE-----------------------------------------------------------------
-void presentar_or(nodos *p){
+
+void ascendente(nodos *p){
+	
+	if(p==NULL){
+	//	cout<<"nada"<<endl;
+		return;
+	}
+	else{
+		ascendente(p->Iz);
+		cout<<"ID : "<<p->id<<endl;
+		cout<<"->  "<<p->nombre<<endl;;
+		ascendente(p->De);
+	}
+
+
+}
+
+void descendente(nodos *p){
+	
 	if(p==NULL){
 		return;
 	}
 	else{
 	
-		presentar_or(p->De);
-			cout<<"ID: "<<p->id<<endl;
-			cout<<"--> "<<p->nombre<<endl;
-		presentar_or(p->Iz);	
+		descendente(p->De);
+			p->id;
+			p->nombre;
+		descendente(p->Iz);	
 }
-}
-//FIN DE PROYECTO----------------------------------------------------------------------------------------
-
+	}
